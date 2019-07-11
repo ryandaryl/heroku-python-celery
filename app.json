@@ -1,0 +1,14 @@
+{
+  "name": "Heroku Python Celery",
+  "description": "A minimal Python Celery app, set up to run in Heroku.",
+  "repository": "https://github.com/ryandaryl/heroku-python-celery",
+  "logo": "http://www.unixstickers.com/image/data/stickers/python/python.sh.png",
+  "keywords": ["python", "celery", "beginner", "minimal"],
+  "addons": [ "heroku-redis" ],
+  "formation": {
+    "worker": {
+      "quantity": 1,
+      "size": "free"
+    }
+  }
+}
