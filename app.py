@@ -1,6 +1,6 @@
 import os
 import logging
-from flask import Flask, request, jsonify, Blueprint
+from flask import Flask, request, jsonify
 from celery import Celery
 
 broker = os.environ['REDIS_URL']
@@ -11,8 +11,7 @@ app = Flask(__name__)
 
 celery = Celery(name, broker=broker, backend=backend)
 
-tasks_blueprint = Blueprint('tasks', __name__, url_prefix='/tasks')
-@tasks_blueprint.route('/<task_id>', methods=['GET'])
+@app.route('/tasks/<task_id>')
 def check_task(task_id):
     task = celery.AsyncResult(task_id)
 
@@ -33,15 +32,12 @@ def check_task(task_id):
         'error': error,
     }
     return jsonify(response)
-app.register_blueprint(tasks_blueprint)
 
-test_blueprint = Blueprint('parse', __name__, url_prefix='/test')
-@test_blueprint.route('/', methods=['GET'])
+@app.route('/test/')
 def handle_job():
     task = celery.send_task('celery_worker.test', args=[request.form])
     response = check_task(task.id)
     return response
-app.register_blueprint(test_blueprint)
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 80))
