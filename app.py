@@ -5,14 +5,14 @@ from celery import Celery
 
 broker = os.environ['REDIS_URL']
 backend = os.environ['REDIS_URL']
-name = os.environ['CELERY_NAME']
+name = os.environ.get('CELERY_NAME', 'default_name')
 
 app = Flask(__name__)
 
 celery = Celery(name, broker=broker, backend=backend)
 
 tasks_blueprint = Blueprint('tasks', __name__, url_prefix='/tasks')
-@tasks_blueprint.route("/<task_id>", methods=['GET'])
+@tasks_blueprint.route('/<task_id>', methods=['GET'])
 def check_task(task_id):
     task = celery.AsyncResult(task_id)
 
@@ -36,13 +36,13 @@ def check_task(task_id):
 app.register_blueprint(tasks_blueprint)
 
 test_blueprint = Blueprint('parse', __name__, url_prefix='/test')
-@test_blueprint.route("/", methods=['GET'])
+@test_blueprint.route('/', methods=['GET'])
 def handle_job():
     task = celery.send_task('celery_worker.test', args=[request.form])
     response = check_task(task.id)
     return response
 app.register_blueprint(test_blueprint)
 
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 80))
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 80))
     app.run(host='0.0.0.0', port=port)

@@ -2,9 +2,9 @@ import os
 from celery import Celery
 broker = os.environ['REDIS_URL']
 backend = os.environ['REDIS_URL']
-celery_name = os.environ['CELERY_NAME']
+name = os.environ.get('CELERY_NAME', 'default_name')
 
-celery = Celery(celery_name, broker=broker,
+celery = Celery(name, broker=broker,
                 backend=backend)
 
 @celery.task(name='celery_worker.test', bind=True)
