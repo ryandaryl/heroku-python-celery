@@ -33,7 +33,7 @@ def check_task(task_id):
     }
     return jsonify(response)
 
-@app.route('/test/')
+@app.route('/test')
 def handle_job():
     task = celery.send_task('celery_worker.test', args=[request.form])
     response = check_task(task.id)
