@@ -22,9 +22,6 @@ def check_task(task_id):
         result = task.result
         error = None
 
-    if isinstance(result, Exception):
-        result = str(result)
-
     response = {
         'id': task_id,
         'state': task.state,
